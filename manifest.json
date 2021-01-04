@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "PageVocab",
+    "icons": {},
+    "version": "0.0.1",
+    "permissions": ["tabs"],
+
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "background": { "scripts": ["background.js"],  "persistent": false },
+     "browser_action": {
+      "icons": {}
+    }
+  
+}
