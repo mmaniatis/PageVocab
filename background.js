@@ -10,7 +10,7 @@ function translate() {
     //Target language
     url += "&target=" + "ES";
     //API-key
-    url += "&key=AIzaSyDIdNmueqLboMGLMkohyE902uED1uHUvMc";
+    url += "&key=";
     fetch(url)
         .then(response => response.json())
         .then(data => console.log(data.data.translations[0].translatedText));
