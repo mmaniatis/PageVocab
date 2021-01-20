@@ -3,7 +3,7 @@
     "name": "PageVocab",
     "icons": {},
     "version": "0.0.1",
-    "permissions": ["tabs"],
+    "permissions": ["tabs", "webNavigation"],
 
     "content_scripts": [
       {

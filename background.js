@@ -1,34 +1,40 @@
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status == 'complete') {
-        getDomInfo();
+chrome.webNavigation.onCompleted.addListener(function(details) { // TODO: webNavigation is not working 
+    if (!(details.url.includes('google')) ) {
+        if(details.frameId==0){
+            translatePage();
+        }
     }
 });
-function translate() {
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+     translate(request.wordToTranslate).then(res => res.json()).then(json => 
+        {
+            const obj = json.data.translations[0].translatedText;
+            sendResponse(obj);
+        });
+    return true;
+});
+
+
+async function translate(word) {
     var url = "https://translation.googleapis.com/language/translate/v2";
     //Strings requiring translation
-    url += "?q=" + "test"; 
+    url += "?q=" + word; 
     //Target language
     url += "&target=" + "ES";
     //API-key
-    url += "&key=AIzaSyDIdNmueqLboMGLMkohyE902uED1uHUvMc";
-    fetch(url)
-        .then(response => response.json())
-        .then(data => console.log(data.data.translations[0].translatedText));
-        // .then(replaceVocabWord());
+    url += "&key=AIzaSyBPBL9scxJGe0GOjx2Ougtb2MWbdzw_bP4";
+    const response = await fetch(url);
+    // .then(response => response.json())
+        // .then(data => {return data.data.translations[0].translatedText})
+        // .catch(error => console.warn(error));
+    return response;
 }
-//TODO: Need to access current tabs DOM and log in console.
-// UPDATE 1/4/2021 - Successfully talking between content / background scripts. Now I can send dom, add methods, and print that.
-function getDomInfo() {
 
+function translatePage() {
         chrome.tabs.query({ active:true, currentWindow:true} , function(tab){
-            console.log('Sending..');
-            chrome.tabs.sendMessage(tab[0].id, { "message": 'test' }, processDom); 
-    
+            console.log('Sending to content script for translation...');
+            chrome.tabs.sendMessage(tab[0].id, { action: "translatePage" }); 
         });
-        
-    
 }
 
-function processDom(domContent) {
-    domContent.forEach(element => console.log(element));
-}
