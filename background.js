@@ -21,13 +21,10 @@ async function translate(word) {
     //Strings requiring translation
     url += "?q=" + word; 
     //Target language
-    url += "&target=" + "ES";
+    url += "&target=" + "el";
     //API-key
     url += "&key=AIzaSyBPBL9scxJGe0GOjx2Ougtb2MWbdzw_bP4";
     const response = await fetch(url);
-    // .then(response => response.json())
-        // .then(data => {return data.data.translations[0].translatedText})
-        // .catch(error => console.warn(error));
     return response;
 }
 

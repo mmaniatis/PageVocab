@@ -19,6 +19,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // 3. filter trivial words / spaces out of array 
         var randomPartOfDom = dom[getRandomInt(dom.length-1)].innerText
             .replace(/[^a-zA-Z\s]/g, "")
+            .replaceAll("<a.*?</a>", "")
             .split(" ")
             .filter(x => x.length > 2); 
             
@@ -32,9 +33,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
  })
 
-function findWordInDomAndReplace(dom, word_to_translate){
+function findWordInDomAndReplace(dom, word_to_translate){ //filter stuff here
     for (var i = dom.length; i--;) { 
-        if (checkString(dom[i].innerHTML, word_to_translate) && dom[i].outerHTML) {
+        if (checkString(dom[i].innerHTML, word_to_translate)) {
             console.log("Replacing..");
             translateAndReplaceWord(dom, i, word_to_translate)
         }
@@ -42,19 +43,12 @@ function findWordInDomAndReplace(dom, word_to_translate){
 }
 
 function translateAndReplaceWord(dom, index, word_to_translate) {
-    const regex = new RegExp(
-        "\\b" + word_to_translate + "\\b|" + 
-        "\\b" + word_to_translate + 's' + "\\b|" + 
-        "\\b" + capitalize(word_to_translate) + "\\b|" + 
-        "\\b" + capitalize(word_to_translate) + 's' + "\\b" 
-    , 'g');
-
-
+    const regex = new RegExp("(?!<a[^>]*?>)(\\b"+word_to_translate+"\\b|\\b"+capitalize(word_to_translate)+"\\b)(?![^<]*?</a>)",  'g');
     chrome.runtime.sendMessage(({wordToTranslate: word_to_translate}), function(response) {
         console.log(response);
         dom[index].innerHTML = dom[index].innerHTML.replaceAll(regex,
             function(matched) {
-                return '<mark>' + response + '</mark>';
+                return '<mark class="tooltip">' + response + '<span class="tooltiptext">'+ word_to_translate +'</span> </mark>';
             }    
         )
     });
@@ -77,7 +71,6 @@ function checkString(innerHTML, word_to_translate) {
 function capitalize(string) {
     if (string[0] != null)
         return string.charAt(0).toUpperCase() + string.slice(1);
-    
 }
 
 function getRandomInt(max) {
