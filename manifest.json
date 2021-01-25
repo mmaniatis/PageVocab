@@ -8,11 +8,11 @@
     "content_scripts": [
       {
         "matches": ["http://*/*", "https://*/*"],
-        "css":["word.css"],
-        "js": ["content.js"]
+        "css":["main/resources/word.css"],
+        "js": ["main/js/content.js"]
       }
     ],
-    "background": { "scripts": ["background.js"],  "persistent": false },
+    "background": { "scripts": ["main/js/background.js"],  "persistent": false },
      "browser_action": {
       "icons": {}
     }

@@ -1,10 +1,11 @@
-.tooltip {
+.page-vocab-tooltip {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black;
+  background-color:#DC96FE;
+  opacity: 0.9;
 }
 
-.tooltip .tooltiptext {
+.page-vocab-tooltip .page-vocab-tooltiptext {
   visibility: hidden;
   width: 120px;
   background-color: black;
@@ -23,6 +24,8 @@
 
 }
 
-.tooltip:hover .tooltiptext {
+.page-vocab-tooltip:hover .page-vocab-tooltiptext {
   visibility: visible;
+  opacity: 0.95;
+  
 }
