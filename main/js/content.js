@@ -20,8 +20,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             findWordInDomTranslateAndReplace(dom, randomSelection);
         }
     } 
- })
+ });
 
+
+ //TODO: See if this and findWordInDomTranslateAndReplace can be done in one step for performance enhancement.
 function selectRandomWordInDom(dom) {
     /*
         1. select random part of DOM, 
@@ -36,17 +38,15 @@ function selectRandomWordInDom(dom) {
         
     //Within the random part of DOM select a random word.
     var randomSelection = randomPartOfDom[getRandomInt(randomPartOfDom.length-1)]
-    console.log(randomSelection);
     return randomSelection;
 }
 function findWordInDomTranslateAndReplace(dom, word_to_translate) { 
     for (var i = dom.length; i--;) { 
-        if (checkString(dom[i].innerHTML, word_to_translate) && !(checkString(dom[i].outerHTML, 'page-vocab-tooltip')) ) {
+        if (checkString(dom[i].innerHTML, word_to_translate)) {
             translateAndReplaceWord(dom, i, word_to_translate)
         }
     } 
 }
-
 function translateAndReplaceWord(dom, index, word_to_translate) {
     // const regex1 = new RegExp("(?!.<.[^>]*?>)(\\b"+word_to_translate+"\\b|\\b"+capitalize(word_to_translate)+"\\b|\\b"+lower(word_to_translate)+"\\b)(?![^<]*?</.>)",  'g');
     const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!([^<]+)?>)", 'g')
@@ -54,15 +54,14 @@ function translateAndReplaceWord(dom, index, word_to_translate) {
         replaceWord(dom, index, regex, translated_word, word_to_translate);
     });
 }
-
 function replaceWord(dom, index, regex, translated_word, word_to_translate) {
     dom[index].innerHTML = dom[index].innerHTML.replaceAll(regex,
         function(matched) { // Add check to see if it's lower, then match lower.. other wise upper.
+            //TODO: Add onClick to pronounce the word.
             return '<mark class="page-vocab-tooltip">' + translated_word + '<span class="page-vocab-tooltiptext">'+ word_to_translate +'</span> </mark>';
         }    
     )
 }
-
 
 /*
     Script Utility
@@ -81,17 +80,14 @@ function checkString(text, string) {
         return false;
     }
 }
-
 function capitalize(string) {
     if (string[0] != null)
         return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
 function lower(string) {
     if (string[0] != null)
         return string.charAt(0).toLowerCase() + string.slice(1);
 }
-
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }

@@ -3,18 +3,19 @@
     "name": "PageVocab",
     "icons": {},
     "version": "0.0.1",
-    "permissions": ["tabs", "webNavigation"],
+    "permissions": ["tabs", "webNavigation", "storage"],
 
     "content_scripts": [
       {
-        "matches": ["http://*/*", "https://*/*"],
+        "matches": ["<all_urls>"],
         "css":["main/resources/word.css"],
         "js": ["main/js/content.js"]
       }
     ],
     "background": { "scripts": ["main/js/background.js"],  "persistent": false },
      "browser_action": {
-      "icons": {}
+      "icons": {},
+      "default_popup": "main/resources/popup.html"
     }
   
 }
