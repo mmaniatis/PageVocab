@@ -9,7 +9,7 @@ function targetLanguageChanged(value) {
 async function getLocaleList() {
     const data = {"target": "en"}
     var url = "https://translation.googleapis.com/language/translate/v2/languages";
-     url += "?key=AIzaSyBPBL9scxJGe0GOjx2Ougtb2MWbdzw_bP4";
+     url += "?key=AIzaSyBPBL9scxJGe0GOjx2Ougtb2MWbdzw_bP4"; //Regenerating key once deployed.
     const response = await fetch(url, {
         method: "GET"
     }).then(res => res.json()).then(json => {console.log(json)});
