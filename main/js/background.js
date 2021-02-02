@@ -9,7 +9,7 @@ class Translator {
         var url = "https://translation.googleapis.com/language/translate/v2";
         url += "?q=" + word; 
         url += "&target=" + target;
-        url += "&key=*****";
+        url += "&key=";
         const response = await fetch(url);
         // console.log(response);
         return response;
@@ -46,15 +46,3 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }); 
     return true;
 });
-
-
-
-// async function getLocaleList() {
-//     const data = {"target": "en"}
-//     var url = "https://translation.googleapis.com/language/translate/v2/languages";
-//      url += "?key=AIzaSyBPBL9scxJGe0GOjx2Ougtb2MWbdzw_bP4";
-//     const response = await fetch(url, {
-//         method: "GET"
-//     }).then(res => res.json()).then(json => {console.log(json)});
-//     return response;
-// }
