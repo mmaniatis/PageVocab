@@ -4,13 +4,14 @@ class Translator {
     }
 
     async translate(word, target) {
-        console.log('Word to translate: ' + word);
-        console.log('Target language: ' + target);
+        // console.log('Word to translate: ' + word);
+        // console.log('Target language: ' + target);
         var url = "https://translation.googleapis.com/language/translate/v2";
         url += "?q=" + word; 
         url += "&target=" + target;
-        url += "&key=AIzaSyBPBL9scxJGe0GOjx2Ougtb2MWbdzw_bP4";
+        url += "&key=*****";
         const response = await fetch(url);
+        // console.log(response);
         return response;
     }
     

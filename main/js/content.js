@@ -15,8 +15,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(translationsPerformed < 1) {
         if (request.action == "translatePage") { 
             translationsPerformed++;
-            var dom = document.querySelectorAll('p');
-            const randomSelection = selectRandomWordInDom(dom);
+            var dom = Array.from(document.querySelectorAll('p')).filter(x => x.innerHTML.length > 6); //Doing this so that we don't get an empty inner text part of dom that throws error.
+            const randomSelection = selectRandomWordInDom(dom, 2);
             findWordInDomTranslateAndReplace(dom, randomSelection);
         }
     } 
@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
  //TODO: See if this and findWordInDomTranslateAndReplace can be done in one step for performance enhancement.
-function selectRandomWordInDom(dom) {
+function selectRandomWordInDom(dom, wordLength) {
     /*
         1. select random part of DOM, 
         2. filter out non english letters
@@ -34,12 +34,13 @@ function selectRandomWordInDom(dom) {
     var randomPartOfDom = dom[getRandomInt(dom.length-1)].innerText
         .replace(/[^a-zA-Z\s]/g, "")
         .split(" ")
-        .filter(x => x.length > 2); 
+        .filter(x => x.length > wordLength); 
         
     //Within the random part of DOM select a random word.
-    var randomSelection = randomPartOfDom[getRandomInt(randomPartOfDom.length-1)]
+    var randomSelection = randomPartOfDom[getRandomInt(randomPartOfDom.length-1)];
     return randomSelection;
 }
+
 function findWordInDomTranslateAndReplace(dom, word_to_translate) { 
     for (var i = dom.length; i--;) { 
         if (checkString(dom[i].innerHTML, word_to_translate)) {
@@ -49,7 +50,7 @@ function findWordInDomTranslateAndReplace(dom, word_to_translate) {
 }
 function translateAndReplaceWord(dom, index, word_to_translate) {
     // const regex1 = new RegExp("(?!.<.[^>]*?>)(\\b"+word_to_translate+"\\b|\\b"+capitalize(word_to_translate)+"\\b|\\b"+lower(word_to_translate)+"\\b)(?![^<]*?</.>)",  'g');
-    const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!([^<]+)?>)", 'g')
+    const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!')(?!([^<]+)?>)", 'g')
     chrome.runtime.sendMessage(({wordToTranslate: word_to_translate}), function(translated_word) {
         replaceWord(dom, index, regex, translated_word, word_to_translate);
     });
