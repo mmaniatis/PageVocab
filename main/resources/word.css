@@ -2,7 +2,7 @@
   position: relative;
   display: inline-block;
   background-color:#DC96FE;
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .page-vocab-tooltip .page-vocab-tooltiptext {
@@ -13,19 +13,16 @@
   text-align: center;
   border-radius: 6px;
   padding: 5px 0;
-
+  
   /* Position the tooltip */
   position: absolute;
   z-index: 1;
-  width: 120px;
   bottom: 100%;
   left: 50%;
-  margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+  margin-left: -60px;
 
 }
 
 .page-vocab-tooltip:hover .page-vocab-tooltiptext {
   visibility: visible;
-  opacity: 0.95;
-  
 }

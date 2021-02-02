@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "PageVocab",
+    "name": "Page Vocab", 
     "icons": {},
     "version": "0.0.1",
     "permissions": ["tabs", "webNavigation", "storage"],
@@ -9,7 +9,7 @@
       {
         "matches": ["<all_urls>"],
         "css":["main/resources/word.css"],
-        "js": ["main/js/content.js"]
+        "js": ["main/js/content.js", "main/jquery-3.5.1.min.js"]
       }
     ],
     "background": { "scripts": ["main/js/background.js"],  "persistent": false },
