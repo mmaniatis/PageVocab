@@ -1,17 +1,14 @@
 class Translator {
-
+    translatedUrl = "";
     constructor () {
     }
 
     async translate(word, target) {
-        // console.log('Word to translate: ' + word);
-        // console.log('Target language: ' + target);
         var url = "https://translation.googleapis.com/language/translate/v2";
         url += "?q=" + word; 
         url += "&target=" + target;
-        url += "&key=";
+        url += "&key=AIzaSyDavCeDDkRQeAC85udu9p6Kl8Nj0cHuxYU";
         const response = await fetch(url);
-        // console.log(response);
         return response;
     }
     
@@ -23,15 +20,19 @@ class Translator {
 }
 const translator = new Translator();
 
-chrome.tabs.onUpdated.addListener(function(tab, info) {    
-    console.log(tab);
-    if(info.status == 'complete') {
-        translator.translatePage(tab);
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {    
+    //Still facing reddit issue... loading a million times.
+    if((translator.translatedUrl != tab.url)) { // for 1 page sites where url only changes
+        translator.translatedUrl = tab.url;
+        translator.translatePage(tabId);
     }
 });
 
-chrome.tabs.onCreated.addListener(function(tab) {
-    
+chrome.webNavigation.onCompleted .addListener(function(details){ // for refreshes
+    if(details.frameId == 0){
+        translator.translatePage(details.tabId) 
+    }
+
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
