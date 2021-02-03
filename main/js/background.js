@@ -15,21 +15,23 @@ class Translator {
         return response;
     }
     
-    translatePage() {
-        chrome.tabs.query({ currentWindow:true, active:true} , function(tab){
-            console.log('Sending to content script for translation...');
-            chrome.tabs.sendMessage(tab[0].id, { action: "translatePage" }); 
+    translatePage(tabId) {
+        chrome.tabs.query({currentWindow: true,active: true}, function(tab){ 
+            chrome.tabs.sendMessage(tabId, { action: "translatePage" }); 
         });
     }
 }
 const translator = new Translator();
 
-chrome.webNavigation.onCompleted.addListener(function(details) {    
-    if (!(details.url.includes('google')) ) {
-        if(details.frameId==0){
-            translator.translatePage();
-        }
+chrome.tabs.onUpdated.addListener(function(tab, info) {    
+    console.log(tab);
+    if(info.status == 'complete') {
+        translator.translatePage(tab);
     }
+});
+
+chrome.tabs.onCreated.addListener(function(tab) {
+    
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

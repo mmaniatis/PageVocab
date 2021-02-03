@@ -1,32 +1,44 @@
 class DomInteractor {
-    dom;
-    constructor(_dom) {
-        this.dom = _dom;
+    original_dom
+    translated_word;
+    
+    constructor(_original_dom) {
+        this.original_dom = _original_dom;
     }
     
-    selectRandomWord(wordLength) { //Refactor the random selection via jQuery.
-        var randomPartOfText = this.dom[getRandomInt((this.dom.length)/2)].innerText
-            .replace(/[^a-zA-Z\s]/g, "")
-            .split(" ")
-            .filter(x => x.length > wordLength); 
-        //Within the random part of DOM select a random word.
-        var randomSelection = randomPartOfText[getRandomInt(randomPartOfText.length-1)];
-        return randomSelection;
+    /* This function will select a word from top half of array (most lengthiest half),
+        ensuring a good candidate is chosen. 
+    */
+    selectRandomWord(wordLength) {
+        let p_array = [];
+        $.each($('p'), function() {
+            if (this != undefined) {
+                p_array.push(this.innerText);
+            }
+        });
+        p_array.sort(function(a,b) { return (a.length < b.length ? 1 : -1)});
+        let text_to_choose_random_word_from = p_array[getRandomInt(Math.floor(p_array.length/2))].replace(/[^a-zA-Z\s]/g, "")
+        .split(" ")
+        .filter(x => x.length > wordLength);
+        return text_to_choose_random_word_from[getRandomInt(text_to_choose_random_word_from.length-1)];
     }
+
     translateAndReplaceWord(word_to_translate) {
-        const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!')(?!([^<]+)?>)", 'g')
         var self = this;
         chrome.runtime.sendMessage(({wordToTranslate: word_to_translate}), function(translated_word) {
-            self.replaceWord(regex, translated_word, word_to_translate);
+            self.replaceWord(translated_word, word_to_translate);
         });
     }
 
-    replaceWord(regex, translated_word, word_to_translate) {
-        // console.log(word_to_translate);
-        // console.log(translated_word);
-        var replaced = $("body").html().replace(regex,'<mark class="page-vocab-tooltip">' + translated_word + '<span class="page-vocab-tooltiptext">'+ word_to_translate +'</span> </mark>');
-        $("body").html(replaced);
+    replaceWord(translated_word, word_to_translate) {
+        console.log(word_to_translate);
+        console.log(translated_word);
+        const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!([^<]+)?>)", 'g')
+        $.each($('p'), function() {
+            $(this).html($(this).html().replace(regex, (regex,'<mark class="page-vocab-tooltip">' + translated_word + '<span class="page-vocab-tooltiptext">'+ word_to_translate +'</span> </mark>')));
+        })
     }
+
 }
  
 /*
@@ -35,13 +47,12 @@ class DomInteractor {
 */
 let translationsPerformed = 0; 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if(translationsPerformed < 1) {
         if (request.action == "translatePage") { 
             translationsPerformed++;
-            const domInteractor = new DomInteractor($("body"));
+            const domInteractor = new DomInteractor($('*'));
             domInteractor.translateAndReplaceWord(domInteractor.selectRandomWord(3));
         }
-    } 
+
  });
 
 
