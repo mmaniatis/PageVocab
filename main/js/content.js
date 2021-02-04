@@ -1,29 +1,29 @@
 class DomInteractor {
     translations_performed = 0;
-    original_word = "";
-    post_translation_word = "";
     node_array = []
     text_array = [];
     dom;
+    original_word;
     constructor() {
-        
+        this.original_word = "";
     }
 
     init() {
         this.build_p_array(this.dom, this.text_array);
+        this.original_word = this.selectRandomWord(3);
+        // console.log("### INIT(): original_word chosen: " + this.original_word);
     }
     
     /* This function will select a word from top half of array (most lengthiest half),
         ensuring a good candidate is chosen. 
     */
-    selectRandomWord(p_array, wordLength) {
-        if(p_array.length > 0) {
-            p_array.sort(function(a,b) { return (a.length < b.length ? 1 : -1)});
-            let text_to_choose_random_word_from = p_array[getRandomInt(Math.floor(p_array.length/2))]
+    selectRandomWord(wordLength) {
+        if(this.text_array.length > 0) {
+            this.text_array.sort(function(a,b) { return (a.length < b.length ? 1 : -1)});
+            let text_to_choose_random_word_from = this.text_array[getRandomInt(Math.floor(this.text_array.length/2))]            
             .replace(/[^a-zA-Z\s]/g, "")
             .split(" ")
             .filter(x => x.length > wordLength);
-            // console.log(text_to_choose_random_word_from);
             return text_to_choose_random_word_from[getRandomInt(text_to_choose_random_word_from.length-1)];    
         }
         
@@ -42,7 +42,7 @@ class DomInteractor {
 
     build_array_helper(node, text_array) {
         node.each(i => {
-            if(node[i].firstChild != null && (node[i].tagName == 'P') && node[i].firstChild.nodeType == 3 ){
+            if(checkVisible(node[i], "visible") && node[i].firstChild != null && (node[i].tagName == 'P')){
                 this.node_array.push(node[i]);
                 text_array.push(node[i].innerText);
             }
@@ -58,31 +58,35 @@ class DomInteractor {
     }
 
     replaceWord(node, translated_word, word_to_translate) {
-        this.original_word = word_to_translate;
-        this.post_translation_word = translated_word;
         console.log(word_to_translate);
         console.log(translated_word);
         const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!([^<]+)?>)", 'g');
         $.each(this.node_array, function() {
-            $(this).html($(this).html().replace(regex, (regex,'<mark class="page-vocab-tooltip">' + translated_word + '<span class="page-vocab-tooltiptext">'+ word_to_translate +'</span> </mark>')));
+            $(this).html($(this).html().replace(regex, (regex,'<mark class="page-vocab-tooltip" id="pageVocabToolTip">' + translated_word + '<span class="page-vocab-tooltiptext">'+ word_to_translate +'</span> </mark>')));
         })
     }
 
-    undoTranslation() {
-        // console.log(domInteractor.translations_performed);
-        $.each(this.node_array, function() {
-            $(this).html($(this).html().replace('<mark class="page-vocab-tooltip">' + this.post_translation_word + '<span class="page-vocab-tooltiptext">'+ this.original_word +'</span> </mark>', this.original_word));
-        })
-        this.translations_performed = 0;
-        console.log("reversing "  + this.post_translation_word + " back to " + this.original_word);
+    undoTranslation(original_word) {
+        var translated_nodes = document.getElementsByClassName('page-vocab-tooltip');
+        var count = translated_nodes.length-1;
+        $.each(translated_nodes, function (i) {
+            const new_node = document.createElement('s');
+            // translated_nodes[i].outerHTML = '<span>' + original_word + '<span>';
+            translated_nodes[count].outerHTML = '<span>' + original_word + '<span>';
+            // $('#'+translated_nodes[count].id).replaceWith('<span>' + original_word + '<span>');
+            count--;
+
+        });
+
         this.beginTranslate()
     }
     
     beginTranslate() {
-        let randomWord = this.selectRandomWord(this.text_array, 3);
-        if(randomWord != "" && randomWord != undefined){
-            this.translateAndReplaceWord(randomWord.trim());
+        this.original_word = this.selectRandomWord(3);
+        if(this.original_word != "" && this.original_word != undefined){
+            this.translateAndReplaceWord(this.original_word.trim());
         }
+        translationsPerformed++;
     }
 }
 const domInteractor = new DomInteractor();
@@ -93,20 +97,15 @@ const domInteractor = new DomInteractor();
 */
 let translationsPerformed = 0; 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log('Message Received..');
     if (request.action == "translatePage") {
-        domInteractor.dom = $('*'); 
-        domInteractor.init();
-        domInteractor.translations_performed++;
-        if(domInteractor.translations_performed > 1) {
-            console.log("Undoing translation..");
-            domInteractor.undoTranslation();
+        if(translationsPerformed >= 1) {
+            domInteractor.undoTranslation(domInteractor.original_word);
         }
         else {
-            console.log("Beginning translation..");
+            domInteractor.dom = $('*'); 
+            domInteractor.init();
             domInteractor.beginTranslate();
         }
-
     }
  });
 
@@ -149,5 +148,4 @@ function checkVisible( elm, evalType ) {
         elementHeight = $(elm).height();
 
     if (evalType === "visible") return ((y < (vpH + st)) && (y > (st - elementHeight)));
-    if (evalType === "above") return ((y < (vpH + st)));
 }
