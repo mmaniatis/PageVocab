@@ -7,7 +7,7 @@ class Translator {
         var url = "https://translation.googleapis.com/language/translate/v2";
         url += "?q=" + word; 
         url += "&target=" + target;
-        url += "&key=AIzaSyBbgCwx3J5h34ti6xp3c0pjwofwm2yuqmo";
+        url += "&key=";
         const response = await fetch(url);
         return response;
     }

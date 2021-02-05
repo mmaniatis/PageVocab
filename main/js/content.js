@@ -11,7 +11,6 @@ class DomInteractor {
     init() {
         this.build_p_array(this.dom, this.text_array);
         this.original_word = this.selectRandomWord(3);
-        // console.log("### INIT(): original_word chosen: " + this.original_word);
     }
     
     /* This function will select a word from top half of array (most lengthiest half),
@@ -24,7 +23,6 @@ class DomInteractor {
             .replace(/[^a-zA-Z\s]/g, "")
             .split(" ")
             .filter(x => x.length > wordLength);
-           // return 'girl'; //need to work on this (?!<a[^>]*?>)(\bgirl\b)(?![^<]*?<\/a>)(?!([^<]+)?>)
             return text_to_choose_random_word_from[getRandomInt(text_to_choose_random_word_from.length-1)];    
         }
         
@@ -43,14 +41,15 @@ class DomInteractor {
 
     build_array_helper(node, text_array) {
         node.each(i => {
-            if(checkVisible(node[i], "visible") && node[i].firstChild != null && (node[i].tagName == 'P')){
+            if(checkVisible(node[i], "visible") && node[i].firstChild != null && (node[i].tagName == 'P') && !(anchorTagFound(node[i]))) {
+                
                 this.node_array.push(node[i]);
                 text_array.push(node[i].innerText);
             }
         })
 
     }
-
+    
     translateAndReplaceWord(word_to_translate) {
         var self = this;
         chrome.runtime.sendMessage(({wordToTranslate: word_to_translate}), function(translated_word) {
@@ -149,4 +148,15 @@ function checkVisible( elm, evalType ) {
         elementHeight = $(elm).height();
 
     if (evalType === "visible") return ((y < (vpH + st)) && (y > (st - elementHeight)));
+}
+
+function anchorTagFound(elm) {
+    var anchor = false;
+    for(var i = 0; i < elm.childNodes.length; i++){
+        if (elm.childNodes[i].tagName == 'A') {
+            anchor = true;
+            break;
+        }
+    }
+    return anchor;
 }
