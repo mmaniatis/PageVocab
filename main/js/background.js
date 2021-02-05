@@ -7,7 +7,7 @@ class Translator {
         var url = "https://translation.googleapis.com/language/translate/v2";
         url += "?q=" + word; 
         url += "&target=" + target;
-        url += "&key=AIzaSyDavCeDDkRQeAC85udu9p6Kl8Nj0cHuxYU";
+        url += "&key=AIzaSyBbgCwx3J5h34ti6xp3c0pjwofwm2yuqmo";
         const response = await fetch(url);
         return response;
     }
@@ -32,7 +32,6 @@ chrome.webNavigation.onCompleted .addListener(function(details){ // for refreshe
     if(details.frameId == 0){
         translator.translatePage(details.tabId) 
     }
-
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

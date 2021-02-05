@@ -24,6 +24,7 @@ class DomInteractor {
             .replace(/[^a-zA-Z\s]/g, "")
             .split(" ")
             .filter(x => x.length > wordLength);
+           // return 'girl'; //need to work on this (?!<a[^>]*?>)(\bgirl\b)(?![^<]*?<\/a>)(?!([^<]+)?>)
             return text_to_choose_random_word_from[getRandomInt(text_to_choose_random_word_from.length-1)];    
         }
         
@@ -60,7 +61,7 @@ class DomInteractor {
     replaceWord(node, translated_word, word_to_translate) {
         console.log(word_to_translate);
         console.log(translated_word);
-        const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?!([^<]+)?>)", 'g');
+        const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?![^<]*?<\/a>)(?!([^<]+)?>)", 'g');
         $.each(this.node_array, function() {
             $(this).html($(this).html().replace(regex, (regex,'<mark class="page-vocab-tooltip" id="pageVocabToolTip">' + translated_word + '<span class="page-vocab-tooltiptext">'+ word_to_translate +'</span> </mark>')));
         })

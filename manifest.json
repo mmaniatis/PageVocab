@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Page Vocab", 
-    "icons": {},
-    "version": "0.0.1",
+    "icons": {"128":"StoreIcon.png"},
+    "version": "0.0.2",
     "permissions": ["storage", "tabs", "webNavigation"],
     "content_scripts": [
       {
@@ -13,7 +13,7 @@
     ],
     "background": { "scripts": ["main/js/background.js"],  "persistent": false },
      "browser_action": {
-      "icons": {},
+      "icons": {"128": "StoreIcon.png"},
       "default_popup": "main/resources/popup.html"
     }
   
