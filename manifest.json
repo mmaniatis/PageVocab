@@ -3,7 +3,7 @@
     "name": "Page Vocab", 
     "icons": {"128":"StoreIcon.png"},
     "version": "0.0.2",
-    "permissions": ["storage", "tabs", "webNavigation"],
+    "permissions": ["storage", "webNavigation"],
     "content_scripts": [
       {
         "matches": ["<all_urls>"],

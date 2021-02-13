@@ -53,6 +53,8 @@ class DomInteractor {
     }
 
     replaceWordNew(node_array, translated_word, word_to_translate) {
+        console.log(translated_word);
+        console.log(word_to_translate);
         const regex = new RegExp("(\\b"+word_to_translate+"\\b|\\b" +capitalize(word_to_translate)+"\\b"+lower(word_to_translate)+"\\b)(?![^<]*?<\/a>)(?!([^<]+)?>)", 'g');
         for(var node in node_array) {
             var currentElem = $(node_array[node]);
